@@ -15,7 +15,7 @@ enum PicsumService {
         completion: @escaping (Result<PicsumPhoto, NetworkError>) -> Void
     ) {
         let randomId = Int.random(in: 0...100)
-        let url = "https://picsum.photos/id/\(randomId)/info"
+        let url = APIEndpoint.picsumInfo(id: randomId).urlString
         
         NetworkManager.shared.request(url) { (result: Result<PicsumPhoto, NetworkError>) in
             completion(result)
@@ -23,7 +23,7 @@ enum PicsumService {
     }
     
     static func loadImage(into imageView: UIImageView, id: String) {
-        let imageURL = "https://picsum.photos/id/\(id)/600/400"
+        let imageURL = APIEndpoint.picsumImage(id: id, width: 600, height: 400).urlString
         
         imageView.kf.indicatorType = .activity
         
