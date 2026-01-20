@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import Kingfisher
 
 final class PicsumViewController: UIViewController {
     
@@ -104,16 +103,12 @@ extension PicsumViewController: ViewDesignProtocol {
 extension PicsumViewController {
     
     func fetchRandomPhoto() {
-        let randomId = Int.random(in: 0...1000)
-        let url = "https://picsum.photos/id/\(randomId)/info"
-        
-        NetworkManager.shared.request(url) { [weak self] (result: Result<PicsumPhoto, NetworkError>) in
+        PicsumService.fetchRandomPhoto { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .success(let photo):
                 self.updateUI(with: photo)
-                
             case .failure(let error):
                 print("Error:", error)
             }
@@ -124,23 +119,7 @@ extension PicsumViewController {
         DispatchQueue.main.async {
             self.authorLabel.text = "작가: \(photo.author)"
             self.resolutionLabel.text = "해상도: \(photo.width) x \(photo.height)"
-            self.loadImage(id: photo.id)
-        }
-    }
-    
-    func loadImage(id: String) {
-        let imageURL = "https://picsum.photos/id/\(id)/600/400"
-        
-        imageView.kf.indicatorType = .activity
-        
-        if let url = URL(string: imageURL) {
-            imageView.kf.setImage(
-                with: url,
-                options: [
-                    .transition(.fade(0.3)),
-                    .cacheOriginalImage
-                ]
-            )
+            PicsumService.loadImage(into: self.imageView, id: photo.id)
         }
     }
 }
