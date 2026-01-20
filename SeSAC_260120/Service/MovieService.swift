@@ -15,7 +15,7 @@ enum MovieService {
         date: String,
         completion: @escaping (Result<[Movie], NetworkError>) -> Void
     ) {
-        let apiKey = "dc2fd1c608fd6fd91b8e275b6501c11b"
+        let apiKey = APIConstants.kobisKey
         let url = APIEndpoint.dailyBoxOffice(date: date).urlString
         
         NetworkManager.shared.request(url) { (result: Result<BoxOfficeResponse, NetworkError>) in

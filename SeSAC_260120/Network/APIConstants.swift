@@ -11,7 +11,9 @@ enum APIConstants {
     
     // KOBIS 영화 박스오피스
     static let kobisBaseURL = "https://kobis.or.kr/kobisopenapi/webservice/rest"
-    static let kobisKey = "dc2fd1c608fd6fd91b8e275b6501c11b"
+    static var kobisKey: String {
+            Bundle.main.object(forInfoDictionaryKey: "KOBIS_API_KEY") as? String ?? ""
+        }
 
     // Picsum 이미지
     static let picsumBaseURL = "https://picsum.photos"

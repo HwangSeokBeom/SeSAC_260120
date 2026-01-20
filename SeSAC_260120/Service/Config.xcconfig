@@ -1,0 +1,10 @@
+//
+//  Config.xcconfig
+//  SeSAC_260120
+//
+//  Created by Hwangseokbeom on 1/20/26.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+KOBIS_API_KEY = dc2fd1c608fd6fd91b8e275b6501c11b

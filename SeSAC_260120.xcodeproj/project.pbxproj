@@ -10,10 +10,12 @@
 		8B38ACEC2F1F5C370012665B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 8B38ACEB2F1F5C370012665B /* Alamofire */; };
 		8B38ACEF2F1F5C420012665B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B38ACEE2F1F5C420012665B /* SnapKit */; };
 		8B38AE232F1F679B0012665B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 8B38AE222F1F679B0012665B /* Kingfisher */; };
+		8B38AE392F1F998B0012665B /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8B38AE382F1F998B0012665B /* Config.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8B38ACD22F1F5C1E0012665B /* SeSAC_260120.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SeSAC_260120.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B38AE382F1F998B0012665B /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Config.xcconfig; path = SeSAC_260120/Service/Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -54,6 +56,7 @@
 		8B38ACC92F1F5C1E0012665B = {
 			isa = PBXGroup;
 			children = (
+				8B38AE382F1F998B0012665B /* Config.xcconfig */,
 				8B38ACD42F1F5C1E0012665B /* SeSAC_260120 */,
 				8B38ACD32F1F5C1E0012665B /* Products */,
 			);
@@ -139,6 +142,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B38AE392F1F998B0012665B /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +161,7 @@
 /* Begin XCBuildConfiguration section */
 		8B38ACE62F1F5C200012665B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B38AE382F1F998B0012665B /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -189,6 +194,7 @@
 		};
 		8B38ACE72F1F5C200012665B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B38AE382F1F998B0012665B /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -221,6 +227,7 @@
 		};
 		8B38ACE82F1F5C200012665B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B38AE382F1F998B0012665B /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -285,6 +292,7 @@
 		};
 		8B38ACE92F1F5C200012665B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B38AE382F1F998B0012665B /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
