@@ -107,6 +107,10 @@ extension MovieViewController: ViewDesignProtocol {
         let yesterday = yesterdayString()
             searchTextField.text = yesterday
             fetchBoxOffice(targetDate: yesterday)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
     
     private func yesterdayString() -> String {
@@ -119,13 +123,23 @@ extension MovieViewController: ViewDesignProtocol {
         return formatter.string(from: yesterday)
     }
     
+    private func showAlert(title: String = "알림", message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
     @objc private func searchButtonTapped() {
         view.endEditing(true)
         
         let dateString = searchTextField.text ?? ""
         
         guard dateString.count == 8, Int(dateString) != nil else {
-            print("잘못된 날짜 형식입니다. 예: 20120101")
+            showAlert(message: MovieAlert.invalidDate.message)
             return
         }
         
@@ -139,14 +153,22 @@ extension MovieViewController {
         MovieService.fetchDailyBoxOffice(date: targetDate) { [weak self] result in
             guard let self = self else { return }
             
-            switch result {
-            case .success(let movies):
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let movies):
+                    if movies.isEmpty {
+                        self.movies = []
+                        self.tableView.reloadData()
+                        self.showAlert(message: MovieAlert.empty.message)
+                        return
+                    }
+                    
                     self.movies = movies
                     self.tableView.reloadData()
+                    
+                case .failure(let error):
+                    self.showAlert(message: MovieAlert.failure(error).message)
                 }
-            case .failure(let error):
-                print("박스오피스 요청 실패:", error)
             }
         }
     }
