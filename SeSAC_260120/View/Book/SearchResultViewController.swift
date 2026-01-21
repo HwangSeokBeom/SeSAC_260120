@@ -14,6 +14,8 @@ final class SearchResultViewController: UIViewController {
     
     var query: String?
     
+    private var items: [NaverShoppingItem] = []
+    
     private let resultCountLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGreen
@@ -56,21 +58,14 @@ final class SearchResultViewController: UIViewController {
         return collectionView
     }()
 
-    private let dummyItems: [CampingItem] = (0..<10).map { _ in
-        CampingItem(
-            imageURL: nil,
-            shopName: "월드캠핑카",
-            title: "렉스턴 칸 캠핑카 엠페러",
-            priceText: "142,000,000"
-        )
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureView()
         configureHierarchy()
         configureLayout()
+        
+        fetchShopping(sort: "sim")
     }
 }
 
@@ -84,7 +79,12 @@ extension SearchResultViewController: ViewDesignProtocol {
         
         navigationItem.title = query ?? "검색 결과"
 
-        resultCountLabel.text = "\(dummyItems.count)개의 검색 결과"
+        resultCountLabel.text = "0개의 검색 결과"
+        
+        accuracyButton.addTarget(self, action: #selector(didTapSortButton(_:)), for: .touchUpInside)
+        dateButton.addTarget(self, action: #selector(didTapSortButton(_:)), for: .touchUpInside)
+        highPriceButton.addTarget(self, action: #selector(didTapSortButton(_:)), for: .touchUpInside)
+        lowPriceButton.addTarget(self, action: #selector(didTapSortButton(_:)), for: .touchUpInside)
     }
     
     func configureHierarchy() {
@@ -113,6 +113,7 @@ extension SearchResultViewController: ViewDesignProtocol {
 }
 
 private extension SearchResultViewController {
+    
     static func makeSortButton(title: String, isSelected: Bool = false) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(title, for: .normal)
@@ -121,25 +122,95 @@ private extension SearchResultViewController {
         button.layer.borderWidth = 1
         
         if isSelected {
-            button.backgroundColor = .white
-            button.setTitleColor(.black, for: .normal)
-            button.layer.borderColor = UIColor.white.cgColor
+            applySelectedStyle(to: button)
         } else {
-            button.backgroundColor = .clear
-            button.setTitleColor(.white, for: .normal)
-            button.layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
+            applyDeselectedStyle(to: button)
         }
         
         return button
+    }
+    
+    static func applySelectedStyle(to button: UIButton) {
+        button.backgroundColor = .white
+        button.setTitleColor(.black, for: .normal)
+        button.layer.borderColor = UIColor.white.cgColor
+    }
+    
+    static func applyDeselectedStyle(to button: UIButton) {
+        button.backgroundColor = .clear
+        button.setTitleColor(.white, for: .normal)
+        button.layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
+    }
+    
+    func updateSortButtonSelection(selected: UIButton) {
+        let buttons = [accuracyButton, dateButton, highPriceButton, lowPriceButton]
+        buttons.forEach { button in
+            if button === selected {
+                SearchResultViewController.applySelectedStyle(to: button)
+            } else {
+                SearchResultViewController.applyDeselectedStyle(to: button)
+            }
+        }
+    }
+    
+    @objc func didTapSortButton(_ sender: UIButton) {
+        var sort: String = "sim"
+        
+        switch sender {
+        case accuracyButton:
+            sort = "sim"      // 정확도
+        case dateButton:
+            sort = "date"     // 날짜순
+        case highPriceButton:
+            sort = "dsc"      // 가격 높은 순
+        case lowPriceButton:
+            sort = "asc"      // 가격 낮은 순
+        default:
+            break
+        }
+        
+        updateSortButtonSelection(selected: sender)
+        fetchShopping(sort: sort)
+    }
+    
+    func fetchShopping(sort: String) {
+        guard let query = query, !query.isEmpty else { return }
+        
+        NaverShoppingService.searchShopping(
+            query: query,
+            start: 1,
+            display: 40,
+            sort: sort
+        ) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+            case .success(let items):
+                self.items = items
+                DispatchQueue.main.async {
+                    self.resultCountLabel.text = "\(items.count)개의 검색 결과"
+                    self.collectionView.reloadData()
+                }
+                
+            case .failure(let error):
+                print("네이버 쇼핑 에러:", error)
+                DispatchQueue.main.async {
+                    self.items = []
+                    self.resultCountLabel.text = "0개의 검색 결과"
+                    self.collectionView.reloadData()
+                }
+            }
+        }
     }
 }
 
 extension SearchResultViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dummyItems.count
+        return items.count
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: SearchResultCell.identifier,
             for: indexPath
@@ -147,7 +218,7 @@ extension SearchResultViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        let item = dummyItems[indexPath.item]
+        let item = items[indexPath.item]
         cell.configure(with: item)
         return cell
     }

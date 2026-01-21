@@ -102,22 +102,32 @@ final class SearchResultCell: UICollectionViewCell {
         
         shopLabel.snp.makeConstraints {
             $0.top.equalTo(thumbnailImageView.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview().inset(8)
         }
+
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(shopLabel.snp.bottom).offset(4)
+            $0.leading.trailing.equalToSuperview().inset(8)
         }
+
         priceLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(6)
+            $0.leading.trailing.equalToSuperview().inset(8)
             $0.bottom.equalToSuperview().inset(10)
         }
     }
 
-    func configure(with item: CampingItem) {
-        shopLabel.text = item.shopName
-        titleLabel.text = item.title
-        priceLabel.text = item.priceText
+    func configure(with item: NaverShoppingItem) {
+        // <b> 태그 제거
+        let cleanTitle = item.title
+            .replacingOccurrences(of: "<b>", with: "")
+            .replacingOccurrences(of: "</b>", with: "")
+
+        shopLabel.text = item.mallName
+        titleLabel.text = cleanTitle
+        priceLabel.text = "\(item.lprice)원"
         
-        if let urlString = item.imageURL, let url = URL(string: urlString) {
+        if let url = URL(string: item.image) {
             thumbnailImageView.kf.setImage(with: url)
         } else {
             thumbnailImageView.image = UIImage(named: "placeholder")
