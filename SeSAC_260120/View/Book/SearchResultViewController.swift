@@ -65,7 +65,7 @@ final class SearchResultViewController: UIViewController {
         configureHierarchy()
         configureLayout()
         
-        fetchShopping(sort: "sim")
+        fetchShopping(sort: NaverSort.sim)
     }
 }
 
@@ -154,33 +154,28 @@ private extension SearchResultViewController {
     }
     
     @objc func didTapSortButton(_ sender: UIButton) {
-        var sort: String = "sim"
+        let sort: NaverSort
         
         switch sender {
-        case accuracyButton:
-            sort = "sim"      // 정확도
-        case dateButton:
-            sort = "date"     // 날짜순
-        case highPriceButton:
-            sort = "dsc"      // 가격 높은 순
-        case lowPriceButton:
-            sort = "asc"      // 가격 낮은 순
-        default:
-            break
+        case accuracyButton: sort = .sim
+        case dateButton:     sort = .date
+        case highPriceButton: sort = .dsc
+        case lowPriceButton:  sort = .asc
+        default:             sort = .sim
         }
         
         updateSortButtonSelection(selected: sender)
         fetchShopping(sort: sort)
     }
     
-    func fetchShopping(sort: String) {
+    func fetchShopping(sort: NaverSort) {
         guard let query = query, !query.isEmpty else { return }
         
         NaverShoppingService.searchShopping(
             query: query,
             start: 1,
-            display: 40,
-            sort: sort
+            display: 100,
+            sort: sort.rawValue
         ) { [weak self] result in
             guard let self else { return }
             

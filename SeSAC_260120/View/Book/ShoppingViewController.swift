@@ -29,7 +29,7 @@ final class ShoppingViewController: UIViewController {
     }
 }
 
-extension BookViewController: ViewDesignProtocol {
+extension ShoppingViewController: ViewDesignProtocol {
     func configureView() {
         view.backgroundColor = .black
         
@@ -54,14 +54,47 @@ extension BookViewController: ViewDesignProtocol {
     }
 }
 
-extension BookViewController: UISearchBarDelegate {
+extension ShoppingViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
         
-        guard let query = searchBar.text, !query.isEmpty else { return }
+        guard var query = searchBar.text else {
+            showAlert(message: "검색어를 입력해주세요.")
+            return
+        }
+        
+        query = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !query.isEmpty else {
+            showAlert(message: "검색어를 입력해주세요.")
+            return
+        }
+        
+        guard query.count >= 2 else {
+            showAlert(message: "검색어를 두 글자 이상 입력해주세요.")
+            return
+        }
+        
+        let alphabet = CharacterSet.alphanumerics
+        let hangul = CharacterSet(charactersIn: "가"..."힣")
+        let allowed = alphabet.union(hangul)
+        
+        if query.rangeOfCharacter(from: allowed) == nil {
+            showAlert(message: "유효한 검색어를 입력해주세요.")
+            return
+        }
         
         let vc = SearchResultViewController()
         vc.query = query
         navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+private extension ShoppingViewController {
+    func showAlert(title: String = "알림", message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let ok = UIAlertAction(title: "확인", style: .default)
+        alert.addAction(ok)
+        present(alert, animated: true)
     }
 }
