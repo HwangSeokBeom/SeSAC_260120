@@ -31,7 +31,11 @@ final class BookViewController: UIViewController {
 
 extension BookViewController: ViewDesignProtocol {
     func configureView() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .black
+        
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.white
+        ]
         
         navigationItem.title = "도봉러의 쇼핑쇼핑"
         

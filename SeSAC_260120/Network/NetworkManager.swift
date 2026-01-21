@@ -14,6 +14,7 @@ final class NetworkManager {
     
     func request<T: Decodable>(
         _ url: String,
+        headers: [String: String]? = nil,
         completion: @escaping (Result<T, NetworkError>) -> Void
     ) {
         guard let _ = URL(string: url) else {
@@ -21,7 +22,15 @@ final class NetworkManager {
             return
         }
         
-        AF.request(url)
+        let httpHeaders: HTTPHeaders? = {
+            if let headers = headers {
+                return HTTPHeaders(headers)
+            } else {
+                return nil
+            }
+        }()
+        
+        AF.request(url, headers: httpHeaders)
             .responseDecodable(of: T.self) { response in
                 switch response.result {
                 case .success(let value):

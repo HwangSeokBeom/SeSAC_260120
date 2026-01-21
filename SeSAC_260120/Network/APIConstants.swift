@@ -17,4 +17,7 @@ enum APIConstants {
 
     // Picsum 이미지
     static let picsumBaseURL = "https://picsum.photos"
+    
+    static let naverClientId = "nE4Zsn57wa4Oh5YtFqK3"
+    static let naverClientSecret = "GaVgxLVgXl"
 }
