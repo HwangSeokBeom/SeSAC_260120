@@ -29,7 +29,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func threeButtonClicked(_ sender: UIButton) {
-        let bookVC = BookViewController()
+        let bookVC = ShoppingViewController()
         navigationController?.pushViewController(bookVC, animated: true)
     }
 }
