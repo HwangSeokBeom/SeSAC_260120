@@ -11,11 +11,13 @@
 		8B38ACEF2F1F5C420012665B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B38ACEE2F1F5C420012665B /* SnapKit */; };
 		8B38AE232F1F679B0012665B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 8B38AE222F1F679B0012665B /* Kingfisher */; };
 		8B38AE392F1F998B0012665B /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8B38AE382F1F998B0012665B /* Config.xcconfig */; };
+		8B38AE792F20A3340012665B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 8B38AE782F20A3290012665B /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8B38ACD22F1F5C1E0012665B /* SeSAC_260120.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SeSAC_260120.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B38AE382F1F998B0012665B /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Config.xcconfig; path = SeSAC_260120/Service/Config.xcconfig; sourceTree = "<group>"; };
+		8B38AE782F20A3290012665B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -56,6 +58,7 @@
 		8B38ACC92F1F5C1E0012665B = {
 			isa = PBXGroup;
 			children = (
+				8B38AE782F20A3290012665B /* .gitignore */,
 				8B38AE382F1F998B0012665B /* Config.xcconfig */,
 				8B38ACD42F1F5C1E0012665B /* SeSAC_260120 */,
 				8B38ACD32F1F5C1E0012665B /* Products */,
@@ -142,6 +145,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B38AE792F20A3340012665B /* .gitignore in Resources */,
 				8B38AE392F1F998B0012665B /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
