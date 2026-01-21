@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gCe-9I-hgN">
-                                <rect key="frame" x="145" y="290" width="75" height="35"/>
+                                <rect key="frame" x="159" y="172" width="75" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Button"/>
@@ -26,12 +26,21 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LI9-eJ-kKH">
-                                <rect key="frame" x="145" y="487" width="75" height="35"/>
+                                <rect key="frame" x="159" y="369" width="75" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Button"/>
                                 <connections>
                                     <action selector="twoButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fjb-HV-KoS"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H04-bl-mv4">
+                                <rect key="frame" x="159" y="548" width="75" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="threeButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wev-yI-3fO"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -41,6 +50,7 @@
                     <navigationItem key="navigationItem" id="xfc-vm-8oA"/>
                     <connections>
                         <outlet property="oneButton" destination="gCe-9I-hgN" id="ES6-pT-8Ds"/>
+                        <outlet property="threeButton" destination="H04-bl-mv4" id="Opu-8K-4Vy"/>
                         <outlet property="twoButton" destination="LI9-eJ-kKH" id="1QW-fu-2LK"/>
                     </connections>
                 </viewController>
