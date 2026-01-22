@@ -39,3 +39,25 @@ enum MovieService {
         }
     }
 }
+
+struct RealMovieService: MovieServicing {
+    func fetchDailyBoxOffice(
+        date: String,
+        completion: @escaping (Result<[Movie], NetworkError>) -> Void
+    ) {
+        MovieService.fetchDailyBoxOffice(date: date, completion: completion)
+    }
+}
+
+struct MockMovieService: MovieServicing {
+    func fetchDailyBoxOffice(
+        date: String,
+        completion: @escaping (Result<[Movie], NetworkError>) -> Void
+    ) {
+        let mock: [Movie] = [
+            .init(rank: 1, title: "도봉러의 인생영화", date: "2026-01-20"),
+            .init(rank: 2, title: "고래밥의 모험", date: "2025-12-31")
+        ]
+        completion(.success(mock))
+    }
+}

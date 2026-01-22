@@ -10,6 +10,17 @@ import SnapKit
 
 final class ShoppingViewController: UIViewController {
     
+    private let shoppingService: NaverShoppingServicing
+    
+    init(service: NaverShoppingServicing = RealNaverShoppingService()) {
+        self.shoppingService = service
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let searchBar: UISearchBar = {
         let bar = UISearchBar()
         bar.searchBarStyle = .minimal

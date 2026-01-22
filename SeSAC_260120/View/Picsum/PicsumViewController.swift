@@ -10,6 +10,17 @@ import SnapKit
 
 final class PicsumViewController: UIViewController {
     
+    private let picsumService: PicsumServicing
+    
+    init(service: PicsumServicing = RealPicsumService()) {
+        self.picsumService = service
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let loadButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("랜덤 이미지 불러오기", for: .normal)

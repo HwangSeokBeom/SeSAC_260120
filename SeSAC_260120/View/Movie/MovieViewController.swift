@@ -12,6 +12,17 @@ final class MovieViewController: UIViewController {
     
     private var movies: [Movie] = []
     
+    private let movieService: MovieServicing
+    
+    init(service: MovieServicing = RealMovieService()) {
+        self.movieService = service
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let searchTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "20200401"
