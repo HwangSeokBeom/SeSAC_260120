@@ -15,6 +15,7 @@ final class SearchResultViewController: UIViewController {
     var query: String?
     
     private var items: [NaverShoppingItem] = []
+    private var currentSort: NaverSort = .sim
     
     private let resultCountLabel: UILabel = {
         let label = UILabel()
@@ -57,7 +58,7 @@ final class SearchResultViewController: UIViewController {
         collectionView.register(SearchResultCell.self, forCellWithReuseIdentifier: SearchResultCell.identifier)
         return collectionView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -78,7 +79,7 @@ extension SearchResultViewController: ViewDesignProtocol {
         ]
         
         navigationItem.title = query ?? "검색 결과"
-
+        
         resultCountLabel.text = "0개의 검색 결과"
         
         accuracyButton.addTarget(self, action: #selector(didTapSortButton(_:)), for: .touchUpInside)
@@ -164,6 +165,9 @@ private extension SearchResultViewController {
         default:             sort = .sim
         }
         
+        guard sort != currentSort else { return }
+        currentSort = sort
+        
         updateSortButtonSelection(selected: sender)
         fetchShopping(sort: sort)
     }
@@ -185,6 +189,15 @@ private extension SearchResultViewController {
                 DispatchQueue.main.async {
                     self.resultCountLabel.text = "\(items.count)개의 검색 결과"
                     self.collectionView.reloadData()
+                    self.collectionView.layoutIfNeeded()
+                    
+                    if self.collectionView.numberOfItems(inSection: 0) > 0 {
+                        self.collectionView.scrollToItem(
+                            at: IndexPath(item: 0, section: 0),
+                            at: .top,
+                            animated: false
+                        )
+                    }
                 }
                 
             case .failure(let error):
@@ -203,7 +216,7 @@ extension SearchResultViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
