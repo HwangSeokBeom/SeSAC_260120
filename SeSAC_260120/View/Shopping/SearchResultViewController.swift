@@ -16,6 +16,17 @@ final class SearchResultViewController: UIViewController {
     
     private var items: [NaverShoppingItem] = []
     private var currentSort: NaverSort = .sim
+    private let searchUseCase: ShoppingSearchUseCasing
+    
+    init(searchUseCase: ShoppingSearchUseCasing = ShoppingSearchUseCase()) {
+        self.searchUseCase = searchUseCase
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private let resultCountLabel: UILabel = {
         let label = UILabel()
@@ -66,7 +77,9 @@ final class SearchResultViewController: UIViewController {
         configureHierarchy()
         configureLayout()
         
-        fetchShopping(sort: NaverSort.sim)
+        if let query {
+            fetchShopping(reset: true, sort: .sim)
+        }
     }
 }
 
@@ -169,29 +182,36 @@ private extension SearchResultViewController {
         currentSort = sort
         
         updateSortButtonSelection(selected: sender)
-        fetchShopping(sort: sort)
+        fetchShopping(reset: true, sort: sort)
     }
     
-    func fetchShopping(sort: NaverSort) {
+    func fetchShopping(reset: Bool, sort: NaverSort? = nil) {
         guard let query = query, !query.isEmpty else { return }
         
-        NaverShoppingService.searchShopping(
-            query: query,
-            start: 1,
-            display: 100,
-            sort: sort.rawValue
-        ) { [weak self] result in
+        if reset {
+            items.removeAll()
+            collectionView.reloadData()
+            resultCountLabel.text = "0개의 검색 결과"
+        }
+        
+        let sortToUse = sort ?? currentSort
+        
+        let completion: (Result<[NaverShoppingItem], NetworkError>) -> Void = { [weak self] result in
             guard let self else { return }
             
             switch result {
-            case .success(let items):
-                self.items = items
+            case .success(let pageItems):
+                if reset {
+                    self.items = pageItems
+                } else {
+                    self.items.append(contentsOf: pageItems)
+                }
+                
                 DispatchQueue.main.async {
-                    self.resultCountLabel.text = "\(items.count)개의 검색 결과"
+                    self.resultCountLabel.text = "\(self.items.count)개의 검색 결과"
                     self.collectionView.reloadData()
-                    self.collectionView.layoutIfNeeded()
                     
-                    if self.collectionView.numberOfItems(inSection: 0) > 0 {
+                    if reset, self.collectionView.numberOfItems(inSection: 0) > 0 {
                         self.collectionView.scrollToItem(
                             at: IndexPath(item: 0, section: 0),
                             at: .top,
@@ -203,11 +223,34 @@ private extension SearchResultViewController {
             case .failure(let error):
                 print("네이버 쇼핑 에러:", error)
                 DispatchQueue.main.async {
-                    self.items = []
-                    self.resultCountLabel.text = "0개의 검색 결과"
-                    self.collectionView.reloadData()
+                    if reset {
+                        self.items = []
+                        self.resultCountLabel.text = "0개의 검색 결과"
+                        self.collectionView.reloadData()
+                    }
+                    // 필요하면 alert도 여기서
                 }
             }
+        }
+        
+        if reset {
+            searchUseCase.reset(query: query, sort: sortToUse, completion: completion)
+        } else {
+            searchUseCase.loadNext(completion: completion)
+        }
+    }
+}
+
+extension SearchResultViewController {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView.isDragging || scrollView.isDecelerating else { return }
+        
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - height * 1.5 {
+            fetchShopping(reset: false)
         }
     }
 }

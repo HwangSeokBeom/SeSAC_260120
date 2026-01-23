@@ -55,7 +55,6 @@ struct RealNaverShoppingService: NaverShoppingServicing {
         sort: String = "sim",
         completion: @escaping (Result<[NaverShoppingItem], NetworkError>) -> Void
     ) {
-        // 기존 enum을 그대로 재사용
         NaverShoppingService.searchShopping(
             query: query,
             start: start,
@@ -75,7 +74,6 @@ struct MockNaverShoppingService: NaverShoppingServicing {
         sort: String,
         completion: @escaping (Result<[NaverShoppingItem], NetworkError>) -> Void
     ) {
-        // 딱 UI 보기 좋게 임의의 더미 데이터
         let mockItems: [NaverShoppingItem] = [
             .init(
                 title: "<b>도봉러</b>의 감성 텐트",
@@ -108,7 +106,6 @@ struct MockNaverShoppingService: NaverShoppingServicing {
                 category4: "겨울용"
             )
         ]
-        // 네트워크 없이도 바로 성공 콜백 날림
         completion(.success(mockItems))
     }
 }
