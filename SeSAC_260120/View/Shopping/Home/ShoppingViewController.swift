@@ -13,6 +13,15 @@ final class ShoppingViewController: UIViewController {
     private let viewModel: ShoppingViewModel
     private var recentSearches: [String] = []
 
+    private let input = ShoppingViewModel.Input(
+        searchText: Observable(""),
+        didTapSearch: Observable(()),
+        didSelectRecentIndex: Observable(0),
+        didTapDeleteRecentIndex: Observable(0),
+        didTapClearAll: Observable(())
+    )
+    private var output: ShoppingViewModel.Output!
+
     init(viewModel: ShoppingViewModel = ShoppingViewModel()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -48,8 +57,8 @@ final class ShoppingViewController: UIViewController {
         configureHierarchy()
         configureLayout()
 
+        output = viewModel.transform(input)
         bindViewModel()
-        viewModel.load()
     }
 }
 
@@ -94,25 +103,25 @@ extension ShoppingViewController: ViewDesignProtocol {
 private extension ShoppingViewController {
 
     func bindViewModel() {
-        viewModel.output.recentKeywords.bind { [weak self] in
+        output.recentKeywords.bind { [weak self] keywords in
             guard let self else { return }
-            self.recentSearches = self.viewModel.output.recentKeywords.value
+            self.recentSearches = keywords
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
 
-        viewModel.output.alertMessage.bindWithoutInitial { [weak self] in
+        output.alertMessage.bindWithoutInitial { [weak self] msg in
             guard let self else { return }
-            guard let msg = self.viewModel.output.alertMessage.value else { return }
+            guard let msg else { return }
             DispatchQueue.main.async {
                 self.showAlert(message: msg)
             }
         }
 
-        viewModel.output.route.bindWithoutInitial { [weak self] in
+        output.route.bindWithoutInitial { [weak self] route in
             guard let self else { return }
-            guard let route = self.viewModel.output.route.value else { return }
+            guard let route else { return }
 
             DispatchQueue.main.async {
                 switch route {
@@ -121,15 +130,15 @@ private extension ShoppingViewController {
                     let vc = SearchResultViewController(query: query)
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
-
-                self.viewModel.output.route.value = nil
             }
+            
+            self.output.route.value = nil
         }
 
-        viewModel.output.searchText.bindWithoutInitial { [weak self] in
+        output.searchText.bindWithoutInitial { [weak self] text in
             guard let self else { return }
             DispatchQueue.main.async {
-                self.searchBar.text = self.viewModel.output.searchText.value
+                self.searchBar.text = text
             }
         }
     }
@@ -142,7 +151,7 @@ private extension ShoppingViewController {
     }
 
     @objc func didTapClearAll() {
-        viewModel.didTapClearAll()
+        input.didTapClearAll.value = ()
     }
 }
 
@@ -150,7 +159,8 @@ extension ShoppingViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
-        viewModel.didTapSearch(with: searchBar.text ?? "")
+        input.searchText.value = searchBar.text ?? ""
+        input.didTapSearch.value = ()
     }
 }
 
@@ -211,9 +221,10 @@ extension ShoppingViewController: UITableViewDataSource, UITableViewDelegate {
 
         let keyword = recentSearches[indexPath.row]
         cell.configure(with: keyword)
-
-        cell.onDeleteTapped = { [weak self] in
-            self?.viewModel.didTapDeleteRecent(at: indexPath.row)
+        cell.onDeleteTapped = { [weak self, weak cell] in
+            guard let self, let cell,
+                  let currentIndexPath = tableView.indexPath(for: cell) else { return }
+            self.input.didTapDeleteRecentIndex.value = currentIndexPath.row
         }
 
         return cell
@@ -221,6 +232,6 @@ extension ShoppingViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        viewModel.didSelectRecent(at: indexPath.row)
+        input.didSelectRecentIndex.value = indexPath.row
     }
 }

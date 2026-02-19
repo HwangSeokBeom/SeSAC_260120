@@ -8,10 +8,11 @@
 import Foundation
 
 final class Observable<T> {
-    private var action: (() -> Void)?
+
+    private var listener: ((T) -> Void)?
 
     var value: T {
-        didSet { action?() }
+        didSet { listener?(value) }
     }
 
     init(_ value: T) {
@@ -19,11 +20,20 @@ final class Observable<T> {
     }
 
     func bind(action: @escaping () -> Void) {
+        listener = { _ in action() }
         action()
-        self.action = action
     }
 
     func bindWithoutInitial(action: @escaping () -> Void) {
-        self.action = action
+        listener = { _ in action() }
+    }
+
+    func bind(_ closure: @escaping (T) -> Void) {
+        listener = closure
+        closure(value) 
+    }
+
+    func bindWithoutInitial(_ closure: @escaping (T) -> Void) {
+        listener = closure
     }
 }

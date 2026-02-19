@@ -13,7 +13,15 @@ import Alamofire
 final class SearchResultViewController: UIViewController {
 
     private let viewModel: SearchResultViewModel
-    private var items: [NaverShoppingItem] = []
+
+    private var items: [SearchResultCellViewModel] = []
+
+    private let input = SearchResultViewModel.Input(
+        viewDidLoad: Observable(()),
+        didTapSort: Observable(.sim),
+        didReachBottom: Observable(())
+    )
+    private var output: SearchResultViewModel.Output!
 
     init(viewModel: SearchResultViewModel) {
         self.viewModel = viewModel
@@ -81,9 +89,11 @@ final class SearchResultViewController: UIViewController {
         configureView()
         configureHierarchy()
         configureLayout()
+
+        output = viewModel.transform(input)
         bindViewModel()
 
-        viewModel.viewDidLoad()
+        input.viewDidLoad.value = ()
     }
 }
 
@@ -131,21 +141,21 @@ extension SearchResultViewController: ViewDesignProtocol {
 private extension SearchResultViewController {
 
     func bindViewModel() {
-        viewModel.output.title.bind { [weak self] in
+        output.title.bind { [weak self] title in
             guard let self else { return }
             DispatchQueue.main.async {
-                self.navigationItem.title = self.viewModel.output.title.value
+                self.navigationItem.title = title
             }
         }
 
-        viewModel.output.items.bind { [weak self] in
+        output.cellViewModels.bind { [weak self] (newItems: [SearchResultCellViewModel]) in
             guard let self else { return }
-            self.items = self.viewModel.output.items.value
+            self.items = newItems
 
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
 
-                if !self.items.isEmpty {
+                if !newItems.isEmpty {
                     self.collectionView.scrollToItem(
                         at: IndexPath(item: 0, section: 0),
                         at: .top,
@@ -154,24 +164,24 @@ private extension SearchResultViewController {
                 }
             }
         }
-        
-        viewModel.output.resultCountText.bind { [weak self] in
+
+        output.resultCountText.bind { [weak self] text in
             guard let self else { return }
             DispatchQueue.main.async {
-                self.resultCountLabel.text = self.viewModel.output.resultCountText.value
+                self.resultCountLabel.text = text
             }
         }
 
-        viewModel.output.selectedSort.bind { [weak self] in
+        output.selectedSort.bind { [weak self] sort in
             guard let self else { return }
             DispatchQueue.main.async {
-                self.applySortSelectionUI(sort: self.viewModel.output.selectedSort.value)
+                self.applySortSelectionUI(sort: sort)
             }
         }
 
-        viewModel.output.errorMessage.bindWithoutInitial { [weak self] in
+        output.errorMessage.bindWithoutInitial { [weak self] msg in
             guard let self else { return }
-            guard let msg = self.viewModel.output.errorMessage.value else { return }
+            guard let msg else { return }
             print(msg)
         }
     }
@@ -237,7 +247,7 @@ private extension SearchResultViewController {
         case lowPriceButton:  sort = .asc
         default:              sort = .sim
         }
-        viewModel.didTapSort(sort)
+        input.didTapSort.value = sort
     }
 }
 
@@ -252,7 +262,7 @@ extension SearchResultViewController {
 
         if contentHeight > height,
            offsetY > contentHeight - height * 1.5 {
-            viewModel.didReachBottom()
+            input.didReachBottom.value = ()
         }
     }
 }
@@ -273,8 +283,8 @@ extension SearchResultViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        let item = items[indexPath.item]
-        cell.configure(with: item)
+        let vm = items[indexPath.item]
+        cell.configure(with: vm)
         return cell
     }
 }
